@@ -9,14 +9,15 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Image } from "@chakra-ui/react";
 
-import { AlbumResponse, ArtistResponse, ListResponse } from "./types";
+import { AlbumResponse, ArtistResponse, ListResponse, User } from "./types";
 import { StyledModal } from "@/components/modal";
 import { apiRoutes, queryKeys } from "./api-route";
 import { StyledBox1 } from "./shared";
 import { useBoundStore } from "./store/globa-state";
+import axios from "axios";
 
 export const useQueryRandomAlbumsAndSetToGameStore = ({
   artistName,
@@ -81,6 +82,28 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
     setCount(0);
   };
 
+  const setUser = useBoundStore((store) => store.setUser);
+  const user = useBoundStore((store) => store.user)!;
+
+  const updateUser = useMutation({
+    mutationFn: (dto: Partial<User>) => {
+      return axios.patch<User>(apiRoutes.users.userById(user.id), dto);
+    },
+    onSuccess: (data, variables, context) => {
+      if (data.data) {
+        setUser(data.data);
+      }
+    },
+  });
+
+  const userWinHandler = () => {
+    const dto: Partial<User> = {
+      id: user.id,
+      points: user.points + 5,
+    };
+    updateUser.mutate(dto);
+  };
+
   const submitFormGuessArtist = () => {
     setCount((prev) => prev + 1);
 
@@ -90,14 +113,13 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
     if (nameMatches && count < 4) {
       setWin(true);
+      userWinHandler();
       openaModalAndResetCount();
-
       resetQueries();
     } else if (count >= 4) {
       setWin(false);
 
       openaModalAndResetCount();
-
       resetQueries();
     } else {
       removeFirtRandomAlbum();

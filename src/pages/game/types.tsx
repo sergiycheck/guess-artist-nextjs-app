@@ -47,6 +47,7 @@ export const albumsResponse = commonResponseSchema.extend({
 export type AlbumResponse = z.infer<typeof albumsResponse>;
 
 export const userShema = commonResponseSchema.extend({
+  id: z.string(),
   name: z.string(),
   points: z.number(),
 });
