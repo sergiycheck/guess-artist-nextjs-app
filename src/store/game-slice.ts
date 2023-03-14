@@ -1,7 +1,6 @@
 import { AllStates } from "./globa-state";
-import { create, StateCreator } from "zustand";
-import { devtools } from "zustand/middleware";
-import { AlbumResponse, ArtistResponse } from "../pages/game/types";
+import { StateCreator } from "zustand";
+import { AlbumResponse, ArtistResponse } from "@/components/game/types";
 
 export type GameState = {
   artist: ArtistResponse | null;
