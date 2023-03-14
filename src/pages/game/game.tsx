@@ -19,6 +19,7 @@ import { apiRoutes, queryKeys } from "./api-route";
 import { Albums } from "./albums";
 import { StyledBox1 } from "./shared";
 import { useBoundStore } from "./store/globa-state";
+import axios from "axios";
 
 export const useQueryArtistsAndSetRandomArtist = () => {
   const { isLoading, data } = useQuery({
@@ -96,27 +97,11 @@ function UserAuthentication() {
 
   const loginMutation = useMutation({
     mutationFn: (dto: LoginUserDto) => {
-      return fetch(apiRoutes.users.login, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dto),
-      })
-        .then(async (res) => {
-          if (res.ok) {
-            return res.json() as Promise<User>;
-          }
-          const err = await res.json();
-          throw new Error(err.message);
-        })
-        .catch((err) => {
-          throw new Error(err);
-        });
+      return axios.post<User>(apiRoutes.users.login, dto);
     },
     onSuccess: (data, variables, context) => {
-      if (data) {
-        setUser(data);
+      if (data.data) {
+        setUser(data.data);
       }
     },
   });
@@ -145,8 +130,10 @@ function UserAuthentication() {
           >
             <FormLabel>Username</FormLabel>
             <Input
-              maxWidth="400px"
               value={userName}
+              onFocus={() => {
+                loginMutation.reset();
+              }}
               onChange={(e) => {
                 setUserName(e.target.value);
               }}
@@ -156,7 +143,7 @@ function UserAuthentication() {
             {!isError ? (
               <FormHelperText>Enter your username</FormHelperText>
             ) : (
-              <FormErrorMessage>Username is required.</FormErrorMessage>
+              <Text color="red.600">Username is not correct</Text>
             )}
           </FormControl>
 

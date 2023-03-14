@@ -67,22 +67,22 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const resetQueries = () => {
+    queryClient.resetQueries({
+      queryKey: [queryKeys.artists],
+    });
+    queryClient.resetQueries({
+      queryKey: [queryKeys.albums],
+    });
+  };
+
+  const openaModalAndResetCount = () => {
+    onOpen();
+    setCount(0);
+  };
+
   const submitFormGuessArtist = () => {
     setCount((prev) => prev + 1);
-
-    const resetQueries = () => {
-      queryClient.resetQueries({
-        queryKey: [queryKeys.artists],
-      });
-      queryClient.resetQueries({
-        queryKey: [queryKeys.albums],
-      });
-    };
-
-    const openaModalAndResetCount = () => {
-      onOpen();
-      setCount(0);
-    };
 
     const nameMatches =
       nameOfTheCreator.trim().toLowerCase() ===
@@ -135,6 +135,9 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
         <FormControl
           as="form"
+          display="flex"
+          flexDir="column"
+          gap="2rem"
           onSubmit={(e) => {
             e.preventDefault();
             submitFormGuessArtist();
@@ -142,7 +145,6 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
         >
           <Flex justifyContent="center" width="100%">
             <Input
-              maxWidth="400px"
               value={nameOfTheCreator}
               onChange={(e) => {
                 setNameOfTheCreator(e.target.value);
