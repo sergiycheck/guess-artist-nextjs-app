@@ -5,6 +5,8 @@ import {
   Flex,
   FormControl,
   Input,
+  ListItem,
+  OrderedList,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -17,7 +19,7 @@ import { StyledModal } from "@/components/modal";
 import { apiRoutes, queryKeys } from "./api-route";
 import { StyledBox1 } from "./shared";
 import { useBoundStore } from "./store/globa-state";
-import axios from "axios";
+import axios, { Axios } from "axios";
 
 export const useQueryRandomAlbumsAndSetToGameStore = ({
   artistName,
@@ -70,8 +72,13 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
   const resetQueries = () => {
     queryClient.resetQueries({
+      queryKey: [queryKeys.users],
+    });
+
+    queryClient.resetQueries({
       queryKey: [queryKeys.artists],
     });
+
     queryClient.resetQueries({
       queryKey: [queryKeys.albums],
     });
@@ -96,15 +103,15 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
     },
   });
 
-  const userWinHandler = () => {
+  const userWinHandler = async () => {
     const dto: Partial<User> = {
       id: user.id,
       points: user.points + 5,
     };
-    updateUser.mutate(dto);
+    await updateUser.mutateAsync(dto);
   };
 
-  const submitFormGuessArtist = () => {
+  const submitFormGuessArtist = async () => {
     setCount((prev) => prev + 1);
 
     const nameMatches =
@@ -113,7 +120,7 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
     if (nameMatches && count < 4) {
       setWin(true);
-      userWinHandler();
+      await userWinHandler();
       openaModalAndResetCount();
       resetQueries();
     } else if (count >= 4) {
@@ -130,9 +137,19 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
   let renderedModalContent: JSX.Element;
   if (win) {
-    renderedModalContent = <Text fontSize="3xl">You win!</Text>;
+    renderedModalContent = (
+      <Box>
+        <Text fontSize="3xl">You win!</Text>
+        <GetListOfTop3Players />
+      </Box>
+    );
   } else {
-    renderedModalContent = <Text fontSize="3xl">You loose!</Text>;
+    renderedModalContent = (
+      <Box>
+        <Text fontSize="3xl">You loose!</Text>
+        <GetListOfTop3Players />
+      </Box>
+    );
   }
 
   return (
@@ -188,4 +205,34 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
       </>
     </StyledBox1>
   );
+}
+
+function GetListOfTop3Players() {
+  const { isLoading, data } = useQuery({
+    queryKey: [queryKeys.users],
+    queryFn: () => {
+      return axios.get<ListResponse<User>>(apiRoutes.users.top3Users);
+    },
+  });
+
+  let renderedContent: JSX.Element;
+  if (isLoading) {
+    renderedContent = (
+      <Box>
+        <Text>Loading...</Text>
+      </Box>
+    );
+  } else {
+    renderedContent = (
+      <OrderedList>
+        {data?.data.data.map((user) => (
+          <ListItem key={user.id}>
+            Name: {user.name}, Points: {user.points}
+          </ListItem>
+        ))}
+      </OrderedList>
+    );
+  }
+
+  return <Box>{renderedContent}</Box>;
 }
