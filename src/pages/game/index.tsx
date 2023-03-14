@@ -1,15 +1,15 @@
 import React from "react";
 import { SharedHead } from "@/components/head";
-import { Box } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, Input } from "@chakra-ui/react";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Image } from "@chakra-ui/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { getRandomIntInclusive } from "@/utils/random-int";
-import { ArtistResponse, ListResponse } from "./types";
+import { ArtistResponse, ListResponse, LoginUserDto, User } from "./types";
 import { apiRoutes, queryKeys } from "./api-route";
-import { useGameStore } from "./game-state";
 import { Albums } from "./albums";
+import { StyledBox1 } from "./shared";
+import { useBoundStore } from "./store/globa-state";
 
 export const useQueryArtistsAndSetRandomArtist = () => {
   const { isLoading, data } = useQuery({
@@ -20,7 +20,7 @@ export const useQueryArtistsAndSetRandomArtist = () => {
       ),
   });
 
-  const setArtist = useGameStore((state) => state.setArtist);
+  const setArtist = useBoundStore((state) => state.setArtist);
 
   React.useEffect(() => {
     const length = data?.data.length;
@@ -37,7 +37,7 @@ export const useQueryArtistsAndSetRandomArtist = () => {
 export default function Game() {
   const { isLoading } = useQueryArtistsAndSetRandomArtist();
 
-  const artist = useGameStore((state) => state.artist);
+  const artist = useBoundStore((state) => state.artist);
 
   return (
     <>
@@ -48,5 +48,53 @@ export default function Game() {
         {artist && <Albums artist={artist} />}
       </Box>
     </>
+  );
+}
+
+function UserAuthentication() {
+  const [userName, setUserName] = React.useState("");
+
+  const loginMutation = useMutation({
+    mutationFn: (dto: LoginUserDto) => {
+      return fetch(apiRoutes.users.login, {
+        method: "POST",
+        body: JSON.stringify(dto),
+      }).then((res) => res.json() as Promise<User>);
+    },
+  });
+
+  const loginHandler = async () => {
+    const user = await loginMutation.mutateAsync({ name: userName });
+  };
+
+  return (
+    <StyledBox1>
+      <>
+        <FormControl
+          as="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            loginHandler();
+          }}
+        >
+          <Flex justifyContent="center" width="100%">
+            <Input
+              maxWidth="400px"
+              value={userName}
+              onChange={(e) => {
+                setUserName(e.target.value);
+              }}
+              variant="flushed"
+              placeholder="Creator of the album?"
+            />
+          </Flex>
+          <Flex justifyContent="end">
+            <Button colorScheme="teal" size="lg" type="submit">
+              Login
+            </Button>
+          </Flex>
+        </FormControl>
+      </>
+    </StyledBox1>
   );
 }

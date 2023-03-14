@@ -15,14 +15,15 @@ import { Image } from "@chakra-ui/react";
 import { AlbumResponse, ArtistResponse, ListResponse } from "./types";
 import { StyledModal } from "@/components/modal";
 import { apiRoutes, queryKeys } from "./api-route";
-import { useGameStore } from "./game-state";
+import { StyledBox1 } from "./shared";
+import { useBoundStore } from "./store/globa-state";
 
 export const useQueryRandomAlbumsAndSetToGameStore = ({
   artistName,
 }: {
   artistName: string;
 }) => {
-  const setRandomAlbums = useGameStore((store) => store.setRandomAlbums);
+  const setRandomAlbums = useBoundStore((store) => store.setRandomAlbums);
 
   const { isLoading, data } = useQuery({
     queryKey: [queryKeys.albums],
@@ -52,9 +53,9 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
 
   const queryClient = useQueryClient();
 
-  const randomAlbums = useGameStore((store) => store.randomAlbums);
+  const randomAlbums = useBoundStore((store) => store.randomAlbums);
 
-  const removeFirtRandomAlbum = useGameStore(
+  const removeFirtRandomAlbum = useBoundStore(
     (store) => store.removeFirtRandomAlbum
   );
 
@@ -113,60 +114,54 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
   }
 
   return (
-    <Box
-      display="flex"
-      flexGrow={1}
-      justifyContent="center"
-      flexDir="column"
-      gap="3rem"
-      width={{ base: "100%", md: "700px" }}
-      margin="0 auto"
-    >
-      {isLoading && (
-        <Box display="flex" justifyContent="center" alignContent="center">
-          Loading Albums...
-        </Box>
-      )}
+    <StyledBox1>
+      <>
+        {isLoading && (
+          <Box display="flex" justifyContent="center" alignContent="center">
+            Loading Albums...
+          </Box>
+        )}
 
-      <Flex placeItems="center" flexDir="column" gap="2rem">
-        <Box maxWidth="sm">
-          <Image
-            src={firstRandomAlbum?.artworkUrl100}
-            alt={firstRandomAlbum?.collectionName}
-          />
-        </Box>
-        <Text fontSize="md">Album {firstRandomAlbum?.collectionName}</Text>
-        <Text fontSize="md">Remove me: {artist.name}</Text>
-      </Flex>
-
-      <FormControl
-        as="form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submitFormGuessArtist();
-        }}
-      >
-        <Flex justifyContent="center" width="100%">
-          <Input
-            maxWidth="400px"
-            value={nameOfTheCreator}
-            onChange={(e) => {
-              setNameOfTheCreator(e.target.value);
-            }}
-            variant="flushed"
-            placeholder="Creator of the album?"
-          />
+        <Flex placeItems="center" flexDir="column" gap="2rem">
+          <Box maxWidth="sm">
+            <Image
+              src={firstRandomAlbum?.artworkUrl100}
+              alt={firstRandomAlbum?.collectionName}
+            />
+          </Box>
+          <Text fontSize="md">Album {firstRandomAlbum?.collectionName}</Text>
+          <Text fontSize="md">Remove me: {artist.name}</Text>
         </Flex>
-        <Flex justifyContent="end">
-          <Button colorScheme="teal" size="lg" type="submit">
-            Guess
-          </Button>
-        </Flex>
-      </FormControl>
 
-      <StyledModal title="Results" isOpen={isOpen} onClose={onClose}>
-        {renderedModalContent}
-      </StyledModal>
-    </Box>
+        <FormControl
+          as="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            submitFormGuessArtist();
+          }}
+        >
+          <Flex justifyContent="center" width="100%">
+            <Input
+              maxWidth="400px"
+              value={nameOfTheCreator}
+              onChange={(e) => {
+                setNameOfTheCreator(e.target.value);
+              }}
+              variant="flushed"
+              placeholder="Creator of the album?"
+            />
+          </Flex>
+          <Flex justifyContent="end">
+            <Button colorScheme="teal" size="lg" type="submit">
+              Guess
+            </Button>
+          </Flex>
+        </FormControl>
+
+        <StyledModal title="Results" isOpen={isOpen} onClose={onClose}>
+          {renderedModalContent}
+        </StyledModal>
+      </>
+    </StyledBox1>
   );
 }

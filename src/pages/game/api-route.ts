@@ -35,6 +35,9 @@ export const apiRoutes = {
     userById: function (id: string) {
       return `${this.name}/${id}`;
     },
+    get login() {
+      return `${this.name}/login`;
+    },
   },
 };
 

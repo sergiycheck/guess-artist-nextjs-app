@@ -19,7 +19,7 @@ export const artistResponseSchema = commonResponseSchema.extend({
 
 export type ArtistResponse = z.infer<typeof artistResponseSchema>;
 
-export const albumsResponse = z.object({
+export const albumsResponse = commonResponseSchema.extend({
   id: z.string(),
 
   wrapperType: z.string(),
@@ -45,3 +45,12 @@ export const albumsResponse = z.object({
 });
 
 export type AlbumResponse = z.infer<typeof albumsResponse>;
+
+export const userShema = commonResponseSchema.extend({
+  name: z.string(),
+  points: z.number(),
+});
+
+export type User = z.infer<typeof userShema>;
+
+export type LoginUserDto = Pick<User, "name">;
