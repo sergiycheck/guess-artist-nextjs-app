@@ -4,7 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { theme } from "./theme";
+import { theme } from "@/theme/theme";
 import Layout from "@/components/layout";
 
 const queryClient = new QueryClient();

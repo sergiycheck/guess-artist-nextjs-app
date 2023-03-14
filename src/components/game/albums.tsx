@@ -16,9 +16,9 @@ import { Image } from "@chakra-ui/react";
 
 import { AlbumResponse, ArtistResponse, ListResponse, User } from "./types";
 import { StyledModal } from "@/components/modal";
-import { apiRoutes, queryKeys } from "./api-route";
-import { StyledBox1 } from "./shared";
-import { useBoundStore } from "./store/globa-state";
+import { apiRoutes, queryKeys } from "@/routes/api-route";
+import { StyledBox1 } from "@/components/shared";
+import { useBoundStore } from "../../store/globa-state";
 import axios, { Axios } from "axios";
 
 export const useQueryRandomAlbumsAndSetToGameStore = ({

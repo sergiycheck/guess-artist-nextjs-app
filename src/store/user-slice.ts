@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { User } from "../types";
+import { User } from "../pages/game/types";
 import { AllStates } from "./globa-state";
 
 export type UserAuthState = {

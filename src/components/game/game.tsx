@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Input,
@@ -15,10 +14,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { getRandomIntInclusive } from "@/utils/random-int";
 import { ArtistResponse, ListResponse, LoginUserDto, User } from "./types";
-import { apiRoutes, queryKeys } from "./api-route";
+import { apiRoutes, queryKeys } from "@/routes/api-route";
 import { Albums } from "./albums";
-import { StyledBox1 } from "./shared";
-import { useBoundStore } from "./store/globa-state";
+import { StyledBox1 } from "@/components/shared";
+import { useBoundStore } from "../../store/globa-state";
 import axios from "axios";
 
 export const useQueryArtistsAndSetRandomArtist = () => {
