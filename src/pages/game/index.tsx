@@ -1,44 +1,18 @@
+import React from "react";
 import { SharedHead } from "@/components/head";
 import { Box } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Image } from "@chakra-ui/react";
+
+import { getRandomIntInclusive } from "@/utils/random-int";
 import { ArtistResponse, ListResponse } from "./types";
+import { apiRoutes, queryKeys } from "./api-route";
+import { useGameStore } from "./game-state";
+import { Albums } from "./albums";
 
-const baseURL = "http://127.0.0.1:3050";
-const apiRoutes = {
-  artists: {
-    name: `${baseURL}/artists`,
-    get all() {
-      return `${this.name}/all`;
-    },
-  },
-  albums: {
-    name: `${baseURL}/itunes-api`,
-    albumsByPredefinedArtist: function (term: string) {
-      return `${this.name}/albums-by-predefined-artist?${new URLSearchParams(
-        term
-      ).toString()}`;
-    },
-  },
-
-  users: {
-    name: `${baseURL}/users`,
-    get top3Users() {
-      return `${this.name}/top-3`;
-    },
-    userById: function (id: string) {
-      return `${this.name}/${id}`;
-    },
-  },
-};
-
-const queryKeys = {
-  artists: "artists",
-  albums: "albums",
-  users: "users",
-};
-
-export default function Game() {
-  const { isLoading, error, data } = useQuery({
+export const useQueryArtistsAndSetRandomArtist = () => {
+  const { isLoading, data } = useQuery({
     queryKey: [queryKeys.artists],
     queryFn: () =>
       fetch(apiRoutes.artists.all).then(
@@ -46,13 +20,32 @@ export default function Game() {
       ),
   });
 
-  console.log(data);
+  const setArtist = useGameStore((state) => state.setArtist);
+
+  React.useEffect(() => {
+    const length = data?.data.length;
+
+    if (data && length) {
+      const randomArtistIndex = getRandomIntInclusive(0, length - 1);
+      setArtist(data.data[randomArtistIndex]);
+    }
+  }, [data, setArtist]);
+
+  return { isLoading };
+};
+
+export default function Game() {
+  const { isLoading } = useQueryArtistsAndSetRandomArtist();
+
+  const artist = useGameStore((state) => state.artist);
 
   return (
     <>
       <SharedHead />
-      <Box as="main">
+      <Box as="main" height="100%" display="flex" flexDir="column">
         <Box textStyle="h2">Game page</Box>
+        {isLoading && <Box>Loading artist...</Box>}
+        {artist && <Albums artist={artist} />}
       </Box>
     </>
   );
