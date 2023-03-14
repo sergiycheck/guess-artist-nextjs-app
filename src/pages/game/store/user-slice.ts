@@ -5,6 +5,7 @@ import { AllStates } from "./globa-state";
 export type UserAuthState = {
   user: User | undefined;
   setUser: (user: User) => void;
+  removeUser: () => void;
 };
 
 export const createUserAuthSlice: StateCreator<
@@ -15,9 +16,11 @@ export const createUserAuthSlice: StateCreator<
 > = (set) => ({
   user: undefined,
 
-  setUser: (user) =>
+  setUser: (user) => set((state) => ({ user })),
+  removeUser: () =>
     set((state) => {
-      state.user = user;
-      return state;
+      return {
+        user: undefined,
+      };
     }),
 });
