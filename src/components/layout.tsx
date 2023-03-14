@@ -1,0 +1,31 @@
+import { Box, Flex } from "@chakra-ui/react";
+import { StyledLink } from "./styled-link";
+
+function Navbar() {
+  return (
+    <Box as="nav">
+      <Flex as="ul" align="center" justify="center" gap="1rem">
+        <StyledLink href="/">home</StyledLink>
+        <StyledLink href="/game">game</StyledLink>
+      </Flex>
+    </Box>
+  );
+}
+
+function Footer() {
+  return (
+    <Flex as="ul" align="center" justify="center" gap="1rem">
+      <StyledLink href="/">home</StyledLink>
+    </Flex>
+  );
+}
+
+export default function Layout({ children }: { children: JSX.Element }) {
+  return (
+    <>
+      <Navbar />
+      {children}
+      <Footer />
+    </>
+  );
+}
