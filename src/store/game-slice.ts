@@ -34,7 +34,9 @@ export const createGameSlice: StateCreator<AllStates, [], [], GameState> = (
         state.randomAlbums.shift();
       }
 
-      return state;
+      return {
+        randomAlbums: state.randomAlbums,
+      };
     });
   },
 });

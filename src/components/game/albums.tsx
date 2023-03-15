@@ -19,22 +19,22 @@ import { StyledModal } from "@/components/modal";
 import { apiRoutes, queryKeys } from "@/routes/api-route";
 import { StyledBox1 } from "@/components/shared";
 import { useBoundStore } from "../../store/globa-state";
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 export const useQueryRandomAlbumsAndSetToGameStore = ({
-  artistName,
+  artist,
 }: {
-  artistName: string;
+  artist: ArtistResponse;
 }) => {
   const setRandomAlbums = useBoundStore((store) => store.setRandomAlbums);
 
   const { isLoading, data } = useQuery({
-    queryKey: [queryKeys.albums],
+    queryKey: [queryKeys.albums, artist.name],
     queryFn: () =>
       fetch(
         apiRoutes.albums.randomAlbumsByArtist({
           size: 5,
-          term: artistName,
+          term: artist.name,
         })
       ).then((res) => res.json() as Promise<ListResponse<AlbumResponse>>),
   });
@@ -51,7 +51,7 @@ export const useQueryRandomAlbumsAndSetToGameStore = ({
 
 export function Albums({ artist }: { artist: ArtistResponse }) {
   const { isLoading } = useQueryRandomAlbumsAndSetToGameStore({
-    artistName: artist.name,
+    artist,
   });
 
   const queryClient = useQueryClient();
@@ -80,7 +80,7 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
     });
 
     queryClient.resetQueries({
-      queryKey: [queryKeys.albums],
+      queryKey: [queryKeys.albums, , artist.name],
     });
   };
 
@@ -152,6 +152,8 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
     );
   }
 
+  const [showHint, setShowHint] = React.useState(false);
+
   return (
     <StyledBox1>
       <>
@@ -169,7 +171,27 @@ export function Albums({ artist }: { artist: ArtistResponse }) {
             />
           </Box>
           <Text fontSize="md">Album {firstRandomAlbum?.collectionName}</Text>
-          <Text fontSize="md">Remove me: {artist.name}</Text>
+
+          {!showHint ? (
+            <Box
+              filter="auto"
+              blur="4px"
+              onClick={() => {
+                setShowHint((prev) => !prev);
+              }}
+            >
+              <Text fontSize="md">Hint: {artist.name}</Text>
+            </Box>
+          ) : (
+            <Text
+              onClick={() => {
+                setShowHint((prev) => !prev);
+              }}
+              fontSize="md"
+            >
+              Hint: {artist.name}
+            </Text>
+          )}
         </Flex>
 
         <FormControl

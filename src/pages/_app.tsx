@@ -7,7 +7,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "@/theme/theme";
 import Layout from "@/components/layout";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
