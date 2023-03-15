@@ -21,24 +21,23 @@ import { useBoundStore } from "../../store/globa-state";
 import axios from "axios";
 
 export const useQueryArtistsAndSetRandomArtist = () => {
+  const setArtist = useBoundStore((state) => state.setArtist);
+
   const { isLoading, data } = useQuery({
     queryKey: [queryKeys.artists],
     queryFn: () =>
       fetch(apiRoutes.artists.all).then(
         (res) => res.json() as Promise<ListResponse<ArtistResponse>>
       ),
+    onSuccess(data) {
+      const length = data?.data.length;
+
+      if (data && length) {
+        const randomArtistIndex = getRandomIntInclusive(0, length - 1);
+        setArtist(data.data[randomArtistIndex]);
+      }
+    },
   });
-
-  const setArtist = useBoundStore((state) => state.setArtist);
-
-  React.useEffect(() => {
-    const length = data?.data.length;
-
-    if (data && length) {
-      const randomArtistIndex = getRandomIntInclusive(0, length - 1);
-      setArtist(data.data[randomArtistIndex]);
-    }
-  }, [data, setArtist]);
 
   return { isLoading };
 };

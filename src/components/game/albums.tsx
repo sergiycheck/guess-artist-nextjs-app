@@ -37,14 +37,14 @@ export const useQueryRandomAlbumsAndSetToGameStore = ({
           term: artist.name,
         })
       ).then((res) => res.json() as Promise<ListResponse<AlbumResponse>>),
-  });
 
-  React.useEffect(() => {
-    const length = data?.data.length;
-    if (data && length) {
-      setRandomAlbums(data.data);
-    }
-  }, [data, setRandomAlbums]);
+    onSuccess(data) {
+      const length = data?.data.length;
+      if (data && length) {
+        setRandomAlbums(data.data);
+      }
+    },
+  });
 
   return { data, isLoading };
 };
