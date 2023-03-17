@@ -69,7 +69,7 @@ function AlbumsWithUser() {
   const artist = useBoundStore((state) => state.artist);
 
   return (
-    <Box>
+    <>
       <Flex justifyContent="end" gap="2rem" alignItems="center">
         <Text fontSize="2xl">
           User: {user?.name}, Points: {user?.points}
@@ -85,7 +85,7 @@ function AlbumsWithUser() {
         </Button>
       </Flex>
       {artist ? <Albums artist={artist} /> : <></>}
-    </Box>
+    </>
   );
 }
 

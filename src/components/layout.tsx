@@ -4,7 +4,7 @@ import { StyledLink } from "./styled-link";
 function Navbar() {
   return (
     <Box as="nav">
-      <Flex as="ul" align="center" justify="center" gap="1rem">
+      <Flex as="ul" align="center" justify="space-around" gap="1rem">
         <StyledLink href="/">home</StyledLink>
         <StyledLink href="/game">game</StyledLink>
       </Flex>
